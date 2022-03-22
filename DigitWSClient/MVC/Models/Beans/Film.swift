@@ -10,21 +10,13 @@ import Foundation
 
 struct Film: Decodable {
     
-    let title: String
-    let text: String
-    let longitude: Double
-    let latitude: Double
-    let intro: String
-    let year: Int
     let images: [String]
+    let title: String
+    let intro: String
     
     private enum CodingKeys: String, CodingKey {
         case title
-        case text
-        case longitude
-        case latitude
         case intro
-        case year
         case images
     }
 }

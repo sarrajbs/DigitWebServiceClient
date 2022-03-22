@@ -26,7 +26,7 @@
 		<false/>
 		<key>NSExceptionDomains</key>
 		<dict>
-			<key>www.json-generator.com</key>
+			<key>www.mocky.io</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>

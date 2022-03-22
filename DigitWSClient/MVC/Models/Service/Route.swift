@@ -14,7 +14,7 @@ enum Route {
     
     var path: String {
         switch self {
-        case .getFilms: return "/json/get/bUAxzJkxhK"
+        case .getFilms: return "/591cbdc7110000f1058250a1"
         }
     }
 }

@@ -21,7 +21,7 @@ public class DigitWebServiceClient {
         self.baseURL = baseURL
     }
     
-    func sendRequest(urlPth: String, httpMethod: MethodHttp, bodyParams: [String: Any], paramsRequest: [String: String], headers: [String: String], completion: @escaping (Result<(NSData)>) -> Void) {
+    func sendRequest(urlPth: String, httpMethod: MethodHttp, bodyParams: [String: Any], paramsRequest: [String: String], headers: [String: String], completion: @escaping (Result<(Data)>) -> Void) {
         
         let components = NSURLComponents()
         
@@ -71,7 +71,7 @@ public class DigitWebServiceClient {
         }
         
         let task = self.session.dataTask(with: request as URLRequest) { (data, _, error) in
-            if let data = data as NSData? {
+            if let data = data {
                 completion(.success(data))
             } else if let error = error {
                 completion(.failure(error))
@@ -82,13 +82,13 @@ public class DigitWebServiceClient {
         
     }
     
-    public func sendJSONRequest(urlPth: String, httpMethod: MethodHttp, paramsGetRequest: [String: String], bodyParams: [String: Any], headers: [String: String], completion: @escaping (Result<NSData>) -> Void) {
+    public func sendJSONRequest(urlPth: String, httpMethod: MethodHttp, paramsGetRequest: [String: String], bodyParams: [String: Any], headers: [String: String], completion: @escaping (Result<Data>) -> Void) {
         
         sendRequest(urlPth: urlPth, httpMethod: httpMethod, bodyParams: bodyParams, paramsRequest: paramsGetRequest, headers: headers) { (dataResult) in
             switch dataResult {
             case .success(let data):
                 do {
-                    _ = try JSONSerialization.jsonObject(with: data as Data, options: [])
+                    _ = try JSONSerialization.jsonObject(with: data, options: [])
                     completion(.success(data))
                 } catch let error {
                     debugPrint("DigitWebServiceClient --> Serialization error :: \(error.localizedDescription)")
@@ -116,6 +116,7 @@ public class DigitWebServiceClient {
         
     }
     
+    // construct server url and return it as a string
     public func retrieveURLRessources(urlRessoucePath: String) -> String? {
         
         let components = NSURLComponents()
@@ -137,5 +138,27 @@ public class DigitWebServiceClient {
         debugPrint("DigitWebServiceClient --> Url Ressource is \(url.absoluteString)")
         
         return url.absoluteString
+    }
+    
+    // Add  Method to send request and parse decoded object(s)
+    public func sendAndDecodeJSONRequest<T:Decodable>(urlPth: String, httpMethod: MethodHttp, paramsGetRequest: [String: String], bodyParams: [String: Any], headers: [String: String],of type: T.Type, completion: @escaping (Result<T>) -> Void) {
+        
+        sendRequest(urlPth: urlPth, httpMethod: httpMethod, bodyParams: bodyParams, paramsRequest: paramsGetRequest, headers: headers) { (dataResult) in
+            switch dataResult {
+            case .success(let data):
+                do {
+                    let objectToReturn: T = try self.decoder.decode(T.self, from: data)
+                    completion(.success(objectToReturn))
+                } catch let error {
+                    debugPrint("DigitWebServiceClient --> Serialization error :: \(error.localizedDescription)")
+                    completion(.failure(error))
+                }
+                
+            case .failure(let error):
+                debugPrint("DigitWebServiceClient --> JSON converting error :: \(error.localizedDescription)")
+                completion(.failure(error))
+            }
+        }
+        
     }
 }

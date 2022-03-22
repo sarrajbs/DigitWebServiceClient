@@ -10,7 +10,7 @@ import Foundation
 
 enum Environment {
     static let schemeURL = "http"
-    static let hostURL = "www.json-generator.com"
-    static let apiVersion = "/api"
+    static let hostURL = "www.mocky.io"
+    static let apiVersion = "/v2"
     static let portURL = 0
 }
